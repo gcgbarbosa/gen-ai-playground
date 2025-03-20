@@ -1,36 +1,48 @@
-
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 import torch
 
-# Load pre-trained model and tokenizer
+# ## loading the model
+
 tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 model = GPT2LMHeadModel.from_pretrained("gpt2")
-model.eval()  # set model to evaluation mode
+# set model to eval (turn off dropout)
+model.eval()  
 
-# Starting prompt
-prompt = "In a distant future,"
-input_ids = tokenizer(prompt, return_tensors="pt").input_ids
 
-# Generate tokens one by one
-generated_ids = input_ids.clone()
-num_tokens_to_generate = 20  # for example
+# ## llm function
 
-print("\nToken-by-Token Generation:")
-with torch.no_grad():
-    for _ in range(num_tokens_to_generate):
-        # Get the model outputs for the current sequence
-        outputs = model(generated_ids)
-        # Focus on the logits for the last token
+def run_llm(input_ids):
+    with torch.no_grad():
+        # run model
+        outputs = model(input_ids)
+        # get logits
         next_token_logits = outputs.logits[:, -1, :]
-        # Convert logits to probabilities
+        # convert logits to probabilities using softmax
         probabilities = torch.softmax(next_token_logits, dim=-1)
         # Sample the next token
-        next_token = torch.multinomial(probabilities, num_samples=1)
-        # Append the token to the sequence
-        generated_ids = torch.cat((generated_ids, next_token), dim=1)
-        # Decode and display the newly generated token
-        new_token = tokenizer.decode(next_token[0])
-        print(new_token, end="")
+        return torch.multinomial(probabilities, num_samples=1)
+
+
+
+# ## encode sentence
+
+prompt = "The sky is"
+input_ids = tokenizer(prompt, return_tensors="pt").input_ids
+
+input_ids
+
+generated_ids = input_ids.clone()
+
+# ## run llm
+
+next_token = run_llm(generated_ids)
+next_token
+
+new_token = tokenizer.decode(next_token[0])
+new_token
+
+# concatenate
+generated_ids = torch.cat((generated_ids, next_token), dim=1)
 
 # Print the full generated text
 full_text = tokenizer.decode(generated_ids[0])
