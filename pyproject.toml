@@ -5,13 +5,19 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "backoff>=2.2.1",
     "euporie>=2.8.8",
     "gensim>=4.3.3",
+    "gpustat>=1.1.1",
+    "guidance>=0.2.1",
     "jupytext>=1.16.7",
     "matplotlib>=3.10.1",
     "notebook>=7.3.3",
+    "numpy>=1.26.4",
+    "peft>=0.15.0",
     "ruff>=0.11.0",
     "scikit-learn>=1.6.1",
     "torch>=2.6.0",
+    "torchvision>=0.21.0",
     "transformers>=4.49.0",
 ]
